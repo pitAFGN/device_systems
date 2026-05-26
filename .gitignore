@@ -1,0 +1,22 @@
+# Entorno virtual personalizado
+tin_virtual/
+
+# Caché de Python y archivos compilados
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+
+# Configuración local de Editores de Código (VS Code / PyCharm)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Archivos ocultos del Sistema Operativo
+.DS_Store
+Thumbs.db
