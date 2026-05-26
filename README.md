@@ -1,29 +1,18 @@
-# Device Systems - API REST de Usuarios
 
-## 📝 Descripción
-`device_systems` es una API REST funcional desarrollada con **FastAPI** y **Pydantic v2** diseñada para administrar de manera estructurada los usuarios del sistema. El proyecto implementa validaciones estrictas de datos de entrada, manejo de parámetros de ruta y consulta, prevención de registros duplicados en memoria y respuestas HTTP estandarizadas con cabeceras personalizadas.
 
----
+# Servidor corriendo en el entorno virtual
+![uvicorn](image-3.png)
 
-## 🚀 Instalación y Ejecución
+# Capturas Swagger UI
 
-Sigue estos comandos básicos en tu terminal para configurar el entorno virtual y ejecutar el servidor:
+## Get Users
+![get users](image-1.png)
 
-### 1. Crear y Activar el Entorno Virtual
-Abre una terminal en la raíz de la carpeta `device_systems`:
+## Get users-id
+![Get users id](image.png)
 
-* **En Windows (CMD / PowerShell):**
-  ```bash
-  python -m nombre_proyecto venv
- nombre_proyecto\Scripts\activate
+## Post users
+![Post users](image-2.png)
 
-  pip install -r requirements.txt
-
-  uvicorn app.main:app --reload
-
-  Direcciones de Acceso
-Una vez levantado el servidor, puedes ingresar desde tu navegador a las siguientes URLs:
-
-Servidor Base de la API: http://127.0.0.1:8000
-
-Documentación Interactiva (Swagger UI): http://127.0.0.1:8000/docs
+### Reflexion personal FastApi 
+El desarrollo del proyecto device_systems demostró que FastAPI optimiza drásticamente los tiempos de desarrollo al unificar el tipado estático de Python con el protocolo HTTP. Gracias a su integración nativa con Pydantic v2, el framework gestiona de forma automática la validación estricta de datos (como correos y roles) y el control de respuestas mediante Response Models, reduciendo las líneas de código manual. Además, herramientas automatizadas como Swagger UI facilitan las pruebas en tiempo real de la lógica de negocio —como el control de duplicados (400) o filtrados— e inyectar cabeceras personalizadas de manera limpia, logrando una API robusta, estandarizada y altamente escalable con el mínimo esfuerzo.

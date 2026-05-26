@@ -1,5 +1,5 @@
 # Entorno virtual personalizado
-tin_virtual/
+venv
 
 # Caché de Python y archivos compilados
 __pycache__/
