@@ -1,18 +1,39 @@
-from pydantic import BaseModel, Field, EmailStr
-from typing import Literal
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, Literal
 
-# Modelo base con los atributos comunes
+# 1. Esto es nuevo: Restringir los roles válidos a nivel de código
+AllowedRoles = Literal["admin", "user", "support"]
+
 class UserBase(BaseModel):
-    name: str = Field(..., min_length=3, description="Nombre del usuario, mínimo 3 caracteres")
-    email: EmailStr = Field(..., description="Correo electrónico con formato válido")
-    role: Literal["admin", "support", "user"] = Field(..., description="Rol asignado en el sistema")
-    is_active: bool = Field(default=True, description="Estado de actividad del usuario")
+    name: str = Field(..., min_length=3, max_length=50, examples=["Juan Pérez"])
+    email: EmailStr = Field(..., examples=["juan.perez@example.com"])
+    role: AllowedRoles = Field(..., examples=["user"]) # Usa el validador de roles
+    is_active: bool = Field(default=True)
 
-# Modelo para la creación (Entrada)
 class UserCreate(UserBase):
     pass
 
-# Modelo para la respuesta (Salida)
+# ==========================================
+# NUEVOS ESQUEMAS PARA ESTA ACTIVIDAD
+# ==========================================
+
+class UserUpdateFull(UserBase):
+    """
+    Para el PUT: Reutiliza UserBase porque obliga al cliente 
+    a enviar TODOS los campos para reemplazar el usuario.
+    """
+    pass
+
+class UserUpdatePartial(BaseModel):
+    """
+    Para el PATCH: OBLIGATORIO que todos los campos sean opcionales (Optional).
+    Si el cliente solo manda el 'role', Pydantic ignorará el resto sin fallar.
+    """
+    name: Optional[str] = Field(None, min_length=3, max_length=50)
+    email: Optional[EmailStr] = Field(None)
+    role: Optional[AllowedRoles] = Field(None)
+    is_active: Optional[bool] = Field(None)
+
 class UserResponse(UserBase):
     id: int
 
