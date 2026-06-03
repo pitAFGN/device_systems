@@ -69,3 +69,4 @@ El desarrollo del proyecto device_systems demostró que FastAPI optimiza drásti
 https://youtu.be/vcZ8BrKF4QQ
 
 ### video explicacion 2
+https://youtu.be/7hZ7Npzh3x0
