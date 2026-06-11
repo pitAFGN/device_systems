@@ -79,3 +79,34 @@ https://youtu.be/7hZ7Npzh3x0
 ## Evidencia base de datos funcional
 ![base de datos terminal](images/base_de_datos.png)
 
+## Explicación de la diferencia entre modelo SQLAlchemy y schema Pydantic.
+
+Modelo SQLAlchemy (user_model.py)
+Qué es: Es el plano de tu base de datos.
+
+* Su función: Le dice a SQLite cómo crear físicamente la tabla users en el disco duro (columnas, tipos SQL, llaves primarias).
+
+* Con quién habla: Habla directamente con el motor de la base de datos para guardar los datos permanentemente con .commit().
+
+Schema Pydantic (user_schema.py)
+Qué es: Es el filtro de seguridad y validación de tu API.
+
+* Su función: Revisa el JSON que envía el cliente por internet. Valida que el email tenga el formato correcto (@), que el rol sea permitido y que los datos obligatorios no vengan vacíos.
+
+* Con quién habla: Habla con el cliente externo (HTTP) para validar lo que entra (UserCreate) y moldear lo que sale (UserResponse).
+
+### RESUMEN
+SQLAlchemy estructura el almacenamiento físico en el disco duro
+
+Pydantic valida y transporta los datos de forma segura por internet.
+
+## Reflexión final sobre la importancia de usar persistencia en una API
+
+1. Durabilidad frente a Fallos y Reinicios
+Si la API guarda los datos en una lista de Python (users_db = []), la información es volátil. Si el servidor se apaga por un corte de energía, se reinicia para actualizar el código o se cae por un error, todos los usuarios registrados se borran para siempre. La persistencia graba los datos directamente en el disco duro (el archivo .db), garantizando que la información sobreviva a cualquier fallo o mantenimiento del sistema.
+
+2. Integridad y Escalabilidad del Negocio
+En el mundo real, una aplicación no puede depender de la memoria del servidor. Al usar una base de datos relacional con SQLAlchemy, la API adquiere la capacidad de manejar miles de registros de forma organizada. Además, permite aplicar reglas estrictas automáticamente (como impedir que dos usuarios tengan el mismo correo o asegurar que cada uno reciba un ID único e irrepetible), lo que le da madurez, seguridad y viabilidad comercial al software.
+
+En conclucion:
+* La persistencia es lo que transforma a un prototipo escolar en un sistema de software real, confiable y seguro, capaz de respaldar las operaciones de cualquier empresa sin riesgo de pérdida de datos.
