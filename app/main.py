@@ -1,24 +1,19 @@
 from fastapi import FastAPI
-from app.routes.user_routes import router as user_router
+from app.database.connection import engine, Base
+from app.routes import user_routes
+
+# LÓGICA ORM: Crea las tablas físicas en el archivo .db al arrancar si no existen
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
-    title="device_systems API",
-    description=(
-        "## Sistema de Gestión de Usuarios Avanzado\n"
-        "Esta API REST profesional permite la administración completa del recurso `/users` "
-        "con validaciones mediante Pydantic v2, manejo estructurado de excepciones HTTP, "
-        "e inyección de dependencias modulares."
-    ),
-    version="2.0.0",
-    contact={
-        "name": "Andres Felipe Gonzalez Noreña",
-        "url": "https://github.com/tu-usuario",
-    }
+    title="Device Systems API",
+    description="Evolución de la API con persistencia de datos usando SQLAlchemy y SQLite.",
+    version="2.0.0"
 )
 
-# Inclusión de las rutas modulares
-app.include_router(user_router)
+# Registra las rutas automatizadas conectadas a la base de datos
+app.include_router(user_routes.router)
 
-@app.get("/", include_in_schema=False)
+@app.get("/", tags=["Root"])
 def root():
-    return {"message": "device_systems API v2.0.0 está en ejecución. Dirígete a /docs para la documentación."}
+    return {"message": "Bienvenido a la versión persistente de device_systems API"}

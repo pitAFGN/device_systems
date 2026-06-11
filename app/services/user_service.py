@@ -1,61 +1,98 @@
-from app.data.users_db import users_database
-from app.schemas.user_schema import UserCreate, UserUpdateFull, UserUpdatePartial
 from typing import List, Optional
+from sqlalchemy.orm import Session
+from app.models.user_model import User
+from app.schemas.user_schema import UserCreate, UserUpdate, UserPatch
 
 class UserService:
+
     @staticmethod
-    def get_all_users(role: Optional[str] = None, is_active: Optional[bool] = None) -> List[dict]:
-        filtered_users = users_database
+    def create_user(db: Session, user_data: UserCreate) -> User:
+        """• Crear usuario."""
+        db_user = User(
+            name=user_data.name,
+            email=user_data.email,
+            role=user_data.role,
+            is_active=user_data.is_active
+        )
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+        return db_user
+
+    @staticmethod
+    def get_all_users(
+        db: Session, 
+        role: Optional[str] = None, 
+        is_active: Optional[bool] = None,
+        sort_by: Optional[str] = "name"
+    ) -> List[User]:
+        """
+        • Listar usuarios.
+        • Filtrar usuarios por rol.
+        • Filtrar usuarios por estado.
+        • Ordenar usuarios por nombre o fecha de creación.
+        """
+        query = db.query(User)
+        
+        # Filtrado por rol
         if role:
-            filtered_users = [u for u in filtered_users if u["role"] == role]
+            query = query.filter(User.role == role)
+            
+        # Filtrado por estado (is_active)
         if is_active is not None:
-            filtered_users = [u for u in filtered_users if u["is_active"] == is_active]
-        return filtered_users
+            query = query.filter(User.is_active == is_active)
+            
+        # Ordenamiento por nombre o fecha de creación
+        if sort_by == "created_at":
+            query = query.order_by(User.created_at.desc())
+        else:
+            query = query.order_by(User.name.asc())
+            
+        return query.all()
 
     @staticmethod
-    def get_user_by_id(user_id: int) -> Optional[dict]:
-        for user in users_database:
-            if user["id"] == user_id:
-                return user
-        return None
+    def get_by_id(db: Session, user_id: int) -> Optional[User]:
+        """• Buscar usuario por ID."""
+        return db.query(User).filter(User.id == user_id).first()
 
     @staticmethod
-    def get_user_by_email(email: str) -> Optional[dict]:
-        for user in users_database:
-            if user["email"].lower() == email.lower():
-                return user
-        return None
+    def get_by_email(db: Session, email: str) -> Optional[User]:
+        """• Buscar usuario por email."""
+        return db.query(User).filter(User.email == email).first()
 
     @staticmethod
-    def create_user(user_data: UserCreate) -> dict:
-        new_id = max([u["id"] for u in users_database], default=0) + 1
-        new_user = user_data.model_dump()
-        new_user["id"] = new_id
-        users_database.append(new_user)
-        return new_user
+    def update_user_full(db: Session, user_id: int, user_data: UserUpdate) -> Optional[User]:
+        """• Actualizar usuario completo."""
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user:
+            db_user.name = user_data.name
+            db_user.email = user_data.email
+            db_user.role = user_data.role
+            db_user.is_active = user_data.is_active
+            db.commit()
+            db.refresh(db_user)
+        return db_user
 
     @staticmethod
-    def update_user_full(user_id: int, user_data: UserUpdateFull) -> dict:
-        for user in users_database:
-            if user["id"] == user_id:
-                user.update(user_data.model_dump())
-                return user
-        return {}
+    def update_user_partial(db: Session, user_id: int, user_data: UserPatch) -> Optional[User]:
+        """• Actualizar usuario parcial."""
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user:
+            # Convierte el esquema a diccionario ignorando los campos no enviados por el cliente
+            payload_data = user_data.model_dump(exclude_unset=True)
+            for key, value in payload_data.items():
+                setattr(db_user, key, value)
+            db.commit()
+            db.refresh(db_user)
+        return db_user
 
     @staticmethod
-    def update_user_partial(user_id: int, user_data: UserUpdatePartial) -> dict:
-        for user in users_database:
-            if user["id"] == user_id:
-                # Filtrar campos no enviados (None) de forma explícita
-                update_dict = user_data.model_dump(exclude_unset=True)
-                user.update(update_dict)
-                return user
-        return {}
-
-    @staticmethod
-    def delete_user(user_id: int) -> bool:
-        for index, user in enumerate(users_database):
-            if user["id"] == user_id:
-                users_database.pop(index)
-                return True
+    def delete_user(db: Session, user_id: int) -> bool:
+        """• Eliminar usuario."""
+        db_user = db.query(User).filter(User.id == user_id).first()
+        if db_user:
+            db.delete(db_user)
+            db.commit()
+            return True
         return False
+    

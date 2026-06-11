@@ -70,3 +70,12 @@ https://youtu.be/vcZ8BrKF4QQ
 
 ### video explicacion 2
 https://youtu.be/7hZ7Npzh3x0
+
+# Modificaciones con ORM branch "database"
+
+## Estructura del proyecto actual
+![Estructura de el proyecto](images/structure.png)
+
+## Evidencia base de datos funcional
+![base de datos terminal](images/base_de_datos.png)
+
