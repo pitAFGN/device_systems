@@ -110,3 +110,6 @@ En el mundo real, una aplicación no puede depender de la memoria del servidor. 
 
 En conclucion:
 * La persistencia es lo que transforma a un prototipo escolar en un sistema de software real, confiable y seguro, capaz de respaldar las operaciones de cualquier empresa sin riesgo de pérdida de datos.
+
+### video explicacion 3
+https://youtu.be/RkxiYkFEBPQ
