@@ -1,6 +1,8 @@
 from datetime import datetime, timezone
 from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm import relationship
 from app.database.connection import Base
+
 
 class User(Base):
     __tablename__ = "users"
@@ -22,3 +24,7 @@ class User(Base):
     
     # created_at: DateTime, Fecha de creación
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    loans = relationship("Loan", back_populates="user")
+    
+    # ... (Conserva tus imports actuales y tus columnas como id, name, email, role)
