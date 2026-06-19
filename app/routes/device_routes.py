@@ -32,8 +32,3 @@ def update_device_full(device_id: int, device_data: DeviceUpdate, db: Session = 
 @router.patch("/{device_id}", response_model=DeviceResponse, summary="Actualizar dispositivo (Parcial)")
 def update_device_partial(device_id: int, device_data: DeviceUpdate, db: Session = Depends(get_db)):
     return DeviceService.update(db, device_id, device_data)
-
-@router.delete("/{device_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Eliminar un dispositivo")
-def delete_device(device_id: int, db: Session = Depends(get_db)):
-    DeviceService.delete(db, device_id)
-    return None

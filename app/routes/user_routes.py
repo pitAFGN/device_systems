@@ -87,14 +87,3 @@ def update_user_partial(
         verify_email_uniqueness(email=payload_data["email"], current_user_id=current_user.id, db=db)
         
     return UserService.update_user_partial(db=db, user_id=current_user.id, user_data=user_in)
-
-
-@router.delete(
-    "/{user_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    summary="Eliminar usuario (DELETE)",
-    description="Remueve un usuario de la base de datos permanentemente por su ID. Retorna Código 204 No Content si es exitoso."
-)
-def delete_user(current_user: User = Depends(get_valid_user_or_404), db: Session = Depends(get_db)):
-    UserService.delete_user(db=db, user_id=current_user.id)
-    return None
