@@ -53,5 +53,5 @@
 + me parecio bastante complicado al inicio al aplicarlo pero no fue tan exageradamente dificil como parece simplemente toma tiempo, pero a fin de cuentas fue divertido, en cuanto a la importancia podemos decir que ahora es mas parecido a una aplicacion mas segura por asi decirlo ya que evitamos riesgos de perdidas de datos y damos por asi decirlo como un control mas realista a los datos de nuestra aplicacion, tambien que ahora es mas "portable" porque todo esto se puede pasar ya que la base de datos se reconstruye tal cual.
 
 ## Link Video Socializacion
-
+https://youtu.be/TOmbB8tsR9Y
 
