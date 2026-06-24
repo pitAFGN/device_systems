@@ -113,3 +113,7 @@ En conclucion:
 
 ### video explicacion 3
 https://youtu.be/RkxiYkFEBPQ
+
+# Las ultimas 2 actualizaciones tienen sus READMES aparte
+
+* Esto lo hice por comodidad y porque lo sentia mas ordenado que volver a cambiar este mismo readme
