@@ -1,38 +1,45 @@
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, status, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List
+
 from app.dependencies.database_dependency import get_db
 from app.schemas.loan_schema import LoanCreate, LoanResponse, LoanDetailResponse
 from app.services.loan_service import LoanService
+from app.auth.security import decode_access_token
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 router = APIRouter(prefix="/loans", tags=["Loans"])
 
-@router.get("/", response_model=List[LoanDetailResponse], summary="Listar préstamos detallados", description="Devuelve los registros históricos de préstamos incluyendo los datos completos del usuario y del dispositivo asociado (Joins).")
-def get_loans(
-    status: Optional[str] = None,
-    user_email: Optional[str] = None,
-    device_type: Optional[str] = None,
-    db: Session = Depends(get_db)
-):
-    return LoanService.get_all_loans(db, status, user_email, device_type)
+@router.post("/", response_model=LoanResponse, status_code=status.HTTP_201_CREATED, summary="Crear un préstamo")
+def create_loan(loan_data: LoanCreate, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido o expirado.")
+        
+    return LoanService.create(db, loan_data)
 
-@router.get("/{loan_id}", response_model=LoanDetailResponse, summary="Obtener préstamo detallado por ID")
-def get_loan(loan_id: int, db: Session = Depends(get_db)):
-    return LoanService.get_by_id(db, loan_id)
+@router.patch("/{loan_id}/return", response_model=LoanResponse, summary="Registrar devolución de dispositivo")
+def return_device(loan_id: int, db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido o expirado.")
+    
+    # Permitir Admin o Support
+    if payload.get("role") not in ["admin", "support"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tiene permisos suficientes para procesar devoluciones.")
+        
+    return LoanService.process_return(db, loan_id)
 
-@router.post("/", response_model=LoanResponse, status_code=status.HTTP_201_CREATED, summary="Registrar un préstamo", description="Crea un préstamo vinculando un usuario y un dispositivo. Cambia el estado del dispositivo automáticamente a no disponible.")
-def create_loan(loan_data: LoanCreate, db: Session = Depends(get_db)):
-    return LoanService.create_loan(db, loan_data)
-
-@router.patch("/{loan_id}/return", response_model=LoanResponse, summary="Devolver un dispositivo", description="Registra la devolución de un equipo tecnológico, marcando el préstamo como 'returned' y volviendo a habilitar el dispositivo.")
-def return_device(loan_id: int, db: Session = Depends(get_db)):
-    return LoanService.return_loan(db, loan_id)
-
-# Endpoints adicionales solicitados en la Fase 10 para búsquedas por entidad específica:
-@router.get("/user/{user_id}", response_model=List[LoanDetailResponse], summary="Consultar préstamos de un usuario", tags=["Users"])
-def get_user_loans(user_id: int, db: Session = Depends(get_db)):
-    return LoanService.get_loans_by_user(db, user_id)
-
-@router.get("/device/{device_id}", response_model=List[LoanDetailResponse], summary="Consultar historial de préstamos de un dispositivo")
-def get_device_loans(device_id: int, db: Session = Depends(get_db)):
-    return LoanService.get_loans_by_device(db, device_id)
+@router.get("/details", response_model=List[LoanDetailResponse], summary="Ver detalles de todos los préstamos")
+def get_loan_details(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
+    payload = decode_access_token(token)
+    if not payload:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token inválido o expirado.")
+    
+    # Permitir Admin o Support
+    if payload.get("role") not in ["admin", "support"]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Acceso denegado a reportes detallados.")
+        
+    return LoanService.get_all_details(db)

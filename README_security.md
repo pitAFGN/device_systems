@@ -52,4 +52,4 @@ CORS (Cross-Origin Resource Sharing) o Intercambio de Recursos de Origen Cruzado
 La seguridad en una API REST no es una característica opcional, sino el pilar fundamental que transforma un desarrollo funcional en una arquitectura robusta y con calidad de producción. La correcta implementación de capas como la autenticación y autorización por roles (JWT) para evitar la escalada de privilegios, el control de flujo (Rate Limiting) para mitigar ataques de denegación de servicio (DoS), y la restricción perimetral (CORS) para bloquear orígenes no confiables, no solo resguarda la integridad y disponibilidad de los activos digitales de la organización, sino que además mitiga vulnerabilidades críticas y construye un entorno de software confiable, escalable y preparado para las exigencias del mercado real
 
 ## Video final explicativo
-https://youtu.be/lYmmJeKFFes
+https://youtu.be/zHD0c7P1MhA
